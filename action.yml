@@ -79,4 +79,4 @@ runs:
         REPO_FULL_NAME: ${{ github.repository }}
         BASE_SHA: ${{ github.event.pull_request.base.sha }}
         HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-      run: python ${{ github.action_path }}/src/review.py
+      run: python ${{ github.action_path }}/review.py
