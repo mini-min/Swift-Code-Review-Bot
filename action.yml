@@ -1,6 +1,6 @@
-name: 'iOS Code Review'
+name: 'Swift Code Review Bot'
 description: 'AI-powered iOS code review. Free with Gemini, or choose GPT / Claude.'
-author: 'your-org'
+author: 'mini-min'
 branding:
   icon: 'eye'
   color: 'blue'
