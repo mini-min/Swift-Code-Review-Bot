@@ -1,0 +1,82 @@
+name: 'iOS Code Review'
+description: 'AI-powered iOS code review. Free with Gemini, or choose GPT / Claude.'
+author: 'your-org'
+branding:
+  icon: 'eye'
+  color: 'blue'
+
+inputs:
+  gemini_api_key:
+    description: 'Google Gemini API key (free: aistudio.google.com/apikey)'
+    required: false
+    default: ''
+  openai_api_key:
+    description: 'OpenAI API key (platform.openai.com/api-keys)'
+    required: false
+    default: ''
+  anthropic_api_key:
+    description: 'Anthropic API key (console.anthropic.com)'
+    required: false
+    default: ''
+  github_token:
+    description: 'GitHub token'
+    required: true
+    default: ${{ github.token }}
+  provider:
+    description: 'AI provider: gemini (free), openai, anthropic'
+    required: false
+    default: 'gemini'
+  model:
+    description: 'Model name (leave empty for provider default)'
+    required: false
+    default: ''
+  language:
+    description: 'Review language (ko / en)'
+    required: false
+    default: 'ko'
+  sensitivity:
+    description: 'Review sensitivity: strict / balanced / critical_only / learning / performance / security'
+    required: false
+    default: 'balanced'
+  max_files:
+    description: 'Max files to review'
+    required: false
+    default: '20'
+  config_path:
+    description: 'Config file path'
+    required: false
+    default: '.codereview.yml'
+  enable_lsp:
+    description: 'Enable SourceKit-LSP (requires macOS runner)'
+    required: false
+    default: 'false'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+    - name: Install dependencies
+      shell: bash
+      run: pip install httpx>=0.27.0 anthropic>=0.40.0 PyGithub>=2.3.0 pyyaml>=6.0
+    - name: Run iOS Code Review
+      shell: bash
+      env:
+        GEMINI_API_KEY: ${{ inputs.gemini_api_key }}
+        OPENAI_API_KEY: ${{ inputs.openai_api_key }}
+        ANTHROPIC_API_KEY: ${{ inputs.anthropic_api_key }}
+        GITHUB_TOKEN: ${{ inputs.github_token }}
+        INPUT_PROVIDER: ${{ inputs.provider }}
+        INPUT_MODEL: ${{ inputs.model }}
+        INPUT_LANGUAGE: ${{ inputs.language }}
+        INPUT_SENSITIVITY: ${{ inputs.sensitivity }}
+        INPUT_MAX_FILES: ${{ inputs.max_files }}
+        INPUT_CONFIG_PATH: ${{ inputs.config_path }}
+        INPUT_ENABLE_LSP: ${{ inputs.enable_lsp }}
+        PR_NUMBER: ${{ github.event.pull_request.number }}
+        REPO_FULL_NAME: ${{ github.repository }}
+        BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+      run: python ${{ github.action_path }}/src/review.py
